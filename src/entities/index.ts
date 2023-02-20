@@ -9,4 +9,5 @@ export type Game = {
   board: BoardEntity
   turn: Mark
   winner: Mark | null
+  isGameOver: boolean
 }

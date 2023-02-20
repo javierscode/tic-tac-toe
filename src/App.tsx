@@ -1,16 +1,16 @@
 import { useState } from 'react'
 
-import { BoardEntity, Mark } from './entities'
+import { BoardEntity, Game, Mark } from './entities'
 import { hasMarkWon, hasTheGameEnded } from './logic/game'
-import { initializeBoard } from './logic/init'
+import { initializeGame } from './logic/init'
 
 function App() {
-  const [board, setBoard] = useState<BoardEntity>(initializeBoard)
-  const [turn, setTurn] = useState<Mark>(Mark.X)
-  const [winner, setWinner] = useState<Mark | null>(null)
-  const [isGameOver, setIsGameOver] = useState<boolean>(false)
-
-  const changeTurn = () => setTurn(prevTurn => (prevTurn === Mark.X ? Mark.O : Mark.X))
+  const [{ board, turn, winner, isGameOver }, setGame] = useState<Game>(initializeGame)
+  const setBoard = (board: BoardEntity) => setGame(prevGame => ({ ...prevGame, board }))
+  const changeTurn = () =>
+    setGame(prevGame => ({ ...prevGame, turn: prevGame.turn === Mark.X ? Mark.O : Mark.X }))
+  const setWinner = (winner: Mark) => setGame(prevGame => ({ ...prevGame, winner }))
+  const setGameOver = () => setGame(prevGame => ({ ...prevGame, isGameOver: true }))
 
   const handleCellClick = (rowIndex: number, cellIndex: number) => () => {
     if (board[rowIndex][cellIndex] !== null) return
@@ -20,9 +20,9 @@ function App() {
     setBoard(newBoard)
     if (hasMarkWon(newBoard, turn)) {
       setWinner(turn)
-      setIsGameOver(true)
+      setGameOver()
     } else if (hasTheGameEnded(newBoard)) {
-      setIsGameOver(true)
+      setGameOver()
     } else {
       changeTurn()
     }
